@@ -5,6 +5,8 @@
 #include <winbase.h>
 #include <Sddl.h>
 #include <LM.h>
+#include <QSettings>
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -41,8 +43,10 @@ MainWindow::MainWindow(QWidget *parent)
     strRegKeyDS    = "HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Crypto Pro\Settings\Users\" + Lbl_UserSID->text() + "\Keys"
 */
     QSettings settings("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Crypto Pro\\Settings\\Users\\" + Lbl_UserSID->text() + "\\Keys", QSettings::NativeFormat );
-    for (const auto& g : settings->childGroups()) {
-
+    for (const auto& g : settings.childGroups()) {
+      ui->tableWidget->insertRow(ui->tableWidget->rowCount());
+      ui->tableWidget->setItem(ui->tableWidget->rowCount(),2, new QTableWidgetItem(g));
+//      ui->tableWidget->cellWidget(ui->tableWidget->rowCount(), 2)->set
     }
 //    RegOpenKeyExW();
 
