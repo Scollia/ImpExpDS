@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "include\cprogrammoptions.h"
+
 #include <QMainWindow>
 #include <QLabel>
 
@@ -10,16 +12,27 @@ QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+  MainWindow(QWidget *parent = nullptr);
+  ~MainWindow();
 
 private:
-    Ui::MainWindow *ui;
-    QLabel* Lbl_UserName;
-    QLabel* Lbl_UserSIDL;
-    QLabel* Lbl_UserSID;
+  Ui::MainWindow *ui;
+
+  CProgrammOptions* programm_options;
+  QLabel* Lbl_UserName;
+  QLabel* Lbl_UserSID;
+
+  void PrepareUI();
+
+private slots:
+  void ReadUserContainers();
+  void ExportUserContainers();
+  void ReadArchiveContainers();
+  void ImportArchiveContainers();
+signals:
+
 };
 #endif // MAINWINDOW_H
