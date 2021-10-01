@@ -1,3 +1,9 @@
+VERSION = 0.0.1.0
+QMAKE_TARGET_COMPANY = TIV Studio
+QMAKE_TARGET_PRODUCT = Import, export DS
+QMAKE_TARGET_DESCRIPTION = Import, export digital signatures
+QMAKE_TARGET_COPYRIGHT = (c) Ivan Tararykov
+
 QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -9,11 +15,13 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    src/cmaindata.cpp \
     src/cprogrammoptions.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
+    include/cmaindata.h \
     include/cprogrammoptions.h \
     mainwindow.h
 

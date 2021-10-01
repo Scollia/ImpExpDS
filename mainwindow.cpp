@@ -7,7 +7,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
   ui->setupUi(this);
 
-  programm_options = new CProgrammOptions();
+  programm_options  = new CProgrammOptions(this);
+  programm_options->Load();
+  main_data         = new CMainData(this);
+
   PrepareUI();
 /*
   strRegKeyDS   = "HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Crypto Pro\Settings\Users\" + Lbl_UserSID->text() + "\Keys"
@@ -19,12 +22,11 @@ MainWindow::MainWindow(QWidget *parent)
 //    ui->tableWidget->cellWidget(ui->tableWidget->rowCount(), 2)->set
 //  }
 //  RegOpenKeyExW();
-
-
 }
 
 MainWindow::~MainWindow()
 {
+  programm_options->Save();
   delete ui;
 }
 

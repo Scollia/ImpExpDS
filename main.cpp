@@ -8,6 +8,10 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    QCoreApplication::setOrganizationName("TIV Studio");
+//    QCoreApplication::setOrganizationDomain("TIVStudio.ru");
+    QCoreApplication::setApplicationName("Export import DS");
+
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();
     for (const QString &locale : uiLanguages) {

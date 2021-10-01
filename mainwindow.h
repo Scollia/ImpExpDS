@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "include\cprogrammoptions.h"
+#include "include\cmaindata.h"
 
 #include <QMainWindow>
 #include <QLabel>
@@ -22,6 +23,7 @@ private:
   Ui::MainWindow *ui;
 
   CProgrammOptions* programm_options;
+  CMainData*        main_data;
   QLabel* Lbl_UserName;
   QLabel* Lbl_UserSID;
 
