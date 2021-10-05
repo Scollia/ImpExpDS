@@ -57,7 +57,8 @@ CProgrammOptions::CProgrammOptions(QObject *parent) : QObject(parent)
 void CProgrammOptions::Load()
 {
   int tx, ty, twidth, theight;
-  QSettings* tmpSettings = new QSettings(this);
+  MainWindow*  tmpMainWindow = ((MainWindow*) parent());
+  QSettings*   tmpSettings   = new QSettings(this);
 
   tmpSettings->beginGroup("Main");
   path_to_archive_ = tmpSettings->value("PathToArchive", ".\\DSArchive").toString();
@@ -66,10 +67,8 @@ void CProgrammOptions::Load()
   tmpSettings->beginGroup("Position");
   tmpSettings->beginGroup("MainWindows");
 
-  tx      = tmpSettings->value("x", 0).toInt();
-  ty      = tmpSettings->value("y", 0).toInt();
-  twidth  = tmpSettings->value("width", 800).toInt();
-  theight = tmpSettings->value("height", 600).toInt();
+  tmpMainWindow->restoreGeometry(tmpSettings->value("geometry").toByteArray());
+  tmpMainWindow->restoreState(tmpSettings->value("windowState").toByteArray());
 
   tmpSettings->endGroup();
   tmpSettings->endGroup();
@@ -79,34 +78,30 @@ void CProgrammOptions::Load()
   //размер экрана
   QRect rect = screen->geometry();
 
-  if (twidth < 800) {
-    twidth = 800;
-  } else {
-    if (twidth > rect.width()){
-      twidth = rect.width();
-    };
+  twidth = tmpMainWindow->width();
+  if (tmpMainWindow->width() > rect.width()){
+    twidth = rect.width();
   };
 
-  if (theight < 600) {
-    theight = 600;
-  } else {
-    if (theight > rect.height()) {
-      theight = rect.height();
-    };
+  theight = tmpMainWindow->height();
+  if (tmpMainWindow->height() > rect.height()) {
+    theight = tmpMainWindow->height();
   };
 
-  if (tx < 0) {
+  tx = tmpMainWindow->x();
+  if (tmpMainWindow->x() < 0) {
     tx = 0;
   } else {
-    if (tx > rect.width() - twidth) {
+    if (tmpMainWindow->x() > rect.width() - twidth) {
       tx = (rect.width() - twidth);
     };
   };
 
-  if (ty < 0) {
+  ty = tmpMainWindow->y();
+  if (tmpMainWindow->y() < 0) {
     ty = 0;
   } else {
-    if (ty > rect.height() - theight) {
+    if (tmpMainWindow->y() > rect.height() - theight) {
       ty = (rect.height() - theight);
     };
   };
@@ -116,6 +111,8 @@ void CProgrammOptions::Load()
 
 void CProgrammOptions::Save()
 {
+  MainWindow*  tmpMainWindow = ((MainWindow*) parent());
+
   if (path_to_archive_ == "") {
     path_to_archive_ = ".\\DSArchive";
   };
@@ -129,10 +126,9 @@ void CProgrammOptions::Save()
   tmpSettings->beginGroup("Position");
   tmpSettings->beginGroup("MainWindows");
 
-  tmpSettings->setValue("x", ((MainWindow*) parent())->x());
-  tmpSettings->setValue("y", ((MainWindow*) parent())->y());
-  tmpSettings->setValue("width", ((MainWindow*) parent())->width());
-  tmpSettings->setValue("height", ((MainWindow*) parent())->height());
+  tmpSettings->setValue("Geometry", tmpMainWindow->saveGeometry());
+  tmpSettings->setValue("State", tmpMainWindow->saveState());
+
   tmpSettings->endGroup();
   tmpSettings->endGroup();
 };
