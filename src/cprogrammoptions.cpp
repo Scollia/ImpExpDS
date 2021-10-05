@@ -2,8 +2,9 @@
 #include "..\mainwindow.h"
 
 #include <QSettings>
+#include <QGuiApplication>
+#include <QScreen>
 #include <Windows.h>
-//#include <winbase.h>
 #include <Sddl.h>
 
 #define INFO_BUFFER_SIZE 32767
@@ -55,6 +56,7 @@ CProgrammOptions::CProgrammOptions(QObject *parent) : QObject(parent)
 
 void CProgrammOptions::Load()
 {
+  int tx, ty, twidth, theight;
   QSettings* tmpSettings = new QSettings(this);
 
   tmpSettings->beginGroup("Main");
@@ -63,10 +65,53 @@ void CProgrammOptions::Load()
 
   tmpSettings->beginGroup("Position");
   tmpSettings->beginGroup("MainWindows");
-  ((MainWindow*) parent())->setGeometry(tmpSettings->value("x", 50).toInt(), tmpSettings->value("y", 50).toInt(), tmpSettings->value("width", 800).toInt(), tmpSettings->value("height", 400).toInt());
+
+  tx      = tmpSettings->value("x", 0).toInt();
+  ty      = tmpSettings->value("y", 0).toInt();
+  twidth  = tmpSettings->value("width", 800).toInt();
+  theight = tmpSettings->value("height", 600).toInt();
+
   tmpSettings->endGroup();
   tmpSettings->endGroup();
 
+  //опеределянм главный экран
+  auto screen = QGuiApplication::primaryScreen();
+  //размер экрана
+  QRect rect = screen->geometry();
+
+  if (twidth < 800) {
+    twidth = 800;
+  } else {
+    if (twidth > rect.width()){
+      twidth = rect.width();
+    };
+  };
+
+  if (theight < 600) {
+    theight = 600;
+  } else {
+    if (theight > rect.height()) {
+      theight = rect.height();
+    };
+  };
+
+  if (tx < 0) {
+    tx = 0;
+  } else {
+    if (tx > rect.width() - twidth) {
+      tx = (rect.width() - twidth);
+    };
+  };
+
+  if (ty < 0) {
+    ty = 0;
+  } else {
+    if (ty > rect.height() - theight) {
+      ty = (rect.height() - theight);
+    };
+  };
+
+  ((MainWindow*) parent())->setGeometry(tx, ty, twidth, theight);
 };
 
 void CProgrammOptions::Save()

@@ -27,7 +27,6 @@ class CProgrammOptions : public QObject
     QString user_name_;
     QString user_sid_;
     QString user_domain_;
-
     QString path_to_archive_;
   signals:
 };
