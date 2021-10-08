@@ -49,10 +49,10 @@ CProgrammOptions::CProgrammOptions(QObject *parent) : QObject(parent)
   };
 }
 
-//CProgrammOptions::~CProgrammOptions()
-//{
+CProgrammOptions::~CProgrammOptions()
+{
 
-//}
+}
 
 void CProgrammOptions::Load()
 {

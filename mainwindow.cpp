@@ -1,3 +1,8 @@
+#include <QSettings>
+#include <QTreeWidgetItem>
+#include <QMessageBox>
+#include <Winreg.h>
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -67,13 +72,32 @@ void MainWindow::PrepareUI() {
 }
 
 void MainWindow::ReadUserContainers() {
-  ui->tblWdgt_UserContainers->insertRow(0);
-//  ui->tblWdgt_UserContainers->resizeColumnsToContents();
+  // Очищаем таблицу
+  ui->tblWdgt_UserContainers->setRowCount(0);
+  ui->tblWdgt_UserContainers->clearContents();
+
+  QSettings*   tmpSettings   = new QSettings("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Crypto Pro\\Settings\\Users\\" + programm_options->UserSID() + "\\Keys", QSettings::NativeFormat);
+  for (const auto& g : tmpSettings->childGroups()) {
+    auto row = ui->tblWdgt_UserContainers->rowCount();
+    ui->tblWdgt_UserContainers->insertRow(row);
+    auto tmpContainerName = new QTableWidgetItem(g);
+
+    // Снимаем флаг "Редактирование"
+    tmpContainerName->setFlags(tmpContainerName->flags() & ~Qt::ItemIsEditable);
+    ui->tblWdgt_UserContainers->setItem(row, 2, tmpContainerName);
+  };
 };
 
 void MainWindow::ExportUserContainers() {
-  ui->tblWdgt_UserContainers->removeRow(0);
-//  ui->tblWdgt_UserContainers->resizeColumnsToContents();
+//  ui->tblWdgt_UserContainers->setRowCount(0);
+//  ui->tblWdgt_UserContainers->clearContents();
+//  QMessageBox::information(this, "Сообщение", "Значение = " + QString::number(ui->tblWdgt_UserContainers->selectionModel()->selectedRows().size()));
+  for (const auto& g : ui->tblWdgt_UserContainers->selectionModel()->selectedRows()) {
+    ui->tblWdgt_UserContainers->item(g.row(), 2)->text();
+    HKEY phkResult;
+    RegOpenKey(HKEY_LOCAL_MACHINE, "SOFTWARE\\Wow6432Node\\Crypto Pro\\Settings\\Users\\" + programm_options->UserSID() + "\\Keys", phkResult);
+    RegSaveKeyEx(phkResult, "d:\dever", NULL);
+  };
 };
 
 void MainWindow::ReadArchiveContainers() {

@@ -9,7 +9,7 @@ class CProgrammOptions : public QObject
     Q_OBJECT
   public:
     explicit CProgrammOptions(QObject *parent = nullptr);
-//    ~CProgrammOptions();
+    ~CProgrammOptions();
     void Load();
     void Save();
 
