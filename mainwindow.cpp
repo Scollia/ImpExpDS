@@ -1,10 +1,17 @@
 #include <QSettings>
 #include <QTreeWidgetItem>
 #include <QMessageBox>
-#include <Winreg.h>
+#include <Windows.h>
+//#include <Winreg.h>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
+#ifdef _WIN64
+  #define CRYPTO_PRO_USERS_PATH (L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Crypto Pro\\Settings\\Users")
+#else
+  #define CRYPTO_PRO_USERS_PATH ("HKEY_LOCAL_MACHINE\\SOFTWARE\\Crypto Pro\\Settings\\Users")
+#endif
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
@@ -17,16 +24,6 @@ MainWindow::MainWindow(QWidget *parent)
   main_data         = new CMainData(this);
 
   PrepareUI();
-/*
-  strRegKeyDS   = "HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Crypto Pro\Settings\Users\" + Lbl_UserSID->text() + "\Keys"
-*/
-//  QSettings settings("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Crypto Pro\\Settings\\Users\\" + Lbl_UserSID->text() + "\\Keys", QSettings::NativeFormat );
-//  for (const auto& g : settings.childGroups()) {
-//    ui->tableWidget->insertRow(ui->tableWidget->rowCount());
-//    ui->tableWidget->setItem(ui->tableWidget->rowCount(),2, new QTableWidgetItem(g));
-//    ui->tableWidget->cellWidget(ui->tableWidget->rowCount(), 2)->set
-//  }
-//  RegOpenKeyExW();
 }
 
 MainWindow::~MainWindow()
@@ -76,7 +73,7 @@ void MainWindow::ReadUserContainers() {
   ui->tblWdgt_UserContainers->setRowCount(0);
   ui->tblWdgt_UserContainers->clearContents();
 
-  QSettings*   tmpSettings   = new QSettings("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Crypto Pro\\Settings\\Users\\" + programm_options->UserSID() + "\\Keys", QSettings::NativeFormat);
+  QSettings*   tmpSettings   = new QSettings(QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys", QSettings::NativeFormat);
   for (const auto& g : tmpSettings->childGroups()) {
     auto row = ui->tblWdgt_UserContainers->rowCount();
     ui->tblWdgt_UserContainers->insertRow(row);
@@ -86,20 +83,24 @@ void MainWindow::ReadUserContainers() {
     tmpContainerName->setFlags(tmpContainerName->flags() & ~Qt::ItemIsEditable);
     ui->tblWdgt_UserContainers->setItem(row, 2, tmpContainerName);
   };
+  delete tmpSettings;
 };
 
 void MainWindow::ExportUserContainers() {
-//  ui->tblWdgt_UserContainers->setRowCount(0);
-//  ui->tblWdgt_UserContainers->clearContents();
 //  QMessageBox::information(this, "Сообщение", "Значение = " + QString::number(ui->tblWdgt_UserContainers->selectionModel()->selectedRows().size()));
   for (const auto& g : ui->tblWdgt_UserContainers->selectionModel()->selectedRows()) {
-    ui->tblWdgt_UserContainers->item(g.row(), 2)->text();
-    HKEY phkResult;
-    RegOpenKey(HKEY_LOCAL_MACHINE, "SOFTWARE\\Wow6432Node\\Crypto Pro\\Settings\\Users\\" + programm_options->UserSID() + "\\Keys", phkResult);
-    RegSaveKeyEx(phkResult, "d:\dever", NULL);
+    QSettings*   tmpSettings   = new QSettings(QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys\\" + ui->tblWdgt_UserContainers->item(g.row(), 2)->text(), QSettings::NativeFormat);
+
+    QVariant name_key = tmpSettings->value("name.key");
+    QVariant header_key = tmpSettings->value("header.key");
+    QVariant primary_key = tmpSettings->value("primary.key");
+    QVariant masks_key = tmpSettings->value("masks.key");
+    QVariant primary2_key = tmpSettings->value("primary2.key");
+    QVariant masks2_key = tmpSettings->value("masks2.key");
+
+    delete tmpSettings;
   };
 };
-
 void MainWindow::ReadArchiveContainers() {
   ui->tblWdgt_ArchiveContainers->insertRow(0);
 //  ui->tblWdgt_ArchiveContainers->resizeColumnsToContents();
