@@ -89,16 +89,13 @@ void MainWindow::ReadUserContainers() {
 void MainWindow::ExportUserContainers() {
 //  QMessageBox::information(this, "Сообщение", "Значение = " + QString::number(ui->tblWdgt_UserContainers->selectionModel()->selectedRows().size()));
   for (const auto& g : ui->tblWdgt_UserContainers->selectionModel()->selectedRows()) {
-    QSettings*   tmpSettings   = new QSettings(QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys\\" + ui->tblWdgt_UserContainers->item(g.row(), 2)->text(), QSettings::NativeFormat);
+    CContainerData *tmpcontainer = new CContainerData(this);
 
-    QVariant name_key = tmpSettings->value("name.key");
-    QVariant header_key = tmpSettings->value("header.key");
-    QVariant primary_key = tmpSettings->value("primary.key");
-    QVariant masks_key = tmpSettings->value("masks.key");
-    QVariant primary2_key = tmpSettings->value("primary2.key");
-    QVariant masks2_key = tmpSettings->value("masks2.key");
+    tmpcontainer->SetContainerName(ui->tblWdgt_UserContainers->item(g.row(), 2)->text());
+    tmpcontainer->ExportContainer(QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys\\" + ui->tblWdgt_UserContainers->item(g.row(), 2)->text());
+    tmpcontainer->SaveConteinerToArchive(ui->tblWdgt_UserContainers->item(g.row(), 2)->text());
 
-    delete tmpSettings;
+    delete tmpcontainer;
   };
 };
 void MainWindow::ReadArchiveContainers() {
