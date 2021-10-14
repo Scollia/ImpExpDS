@@ -1,8 +1,9 @@
+#include <QDir>
 #include <QSettings>
-#include <QTreeWidgetItem>
 #include <QMessageBox>
+#include <QTreeWidgetItem>
+
 #include <Windows.h>
-//#include <Winreg.h>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -73,7 +74,7 @@ void MainWindow::ReadUserContainers() {
   ui->tblWdgt_UserContainers->setRowCount(0);
   ui->tblWdgt_UserContainers->clearContents();
 
-  QSettings*   tmpSettings   = new QSettings(QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys", QSettings::NativeFormat);
+  QSettings* tmpSettings   = new QSettings(QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys", QSettings::NativeFormat);
   for (const auto& g : tmpSettings->childGroups()) {
     auto row = ui->tblWdgt_UserContainers->rowCount();
     ui->tblWdgt_UserContainers->insertRow(row);
@@ -86,25 +87,67 @@ void MainWindow::ReadUserContainers() {
   delete tmpSettings;
 };
 
-void MainWindow::ExportUserContainers() {
 //  QMessageBox::information(this, "Сообщение", "Значение = " + QString::number(ui->tblWdgt_UserContainers->selectionModel()->selectedRows().size()));
+
+void MainWindow::ExportUserContainers() {
   for (const auto& g : ui->tblWdgt_UserContainers->selectionModel()->selectedRows()) {
     CContainerData *tmpcontainer = new CContainerData(this);
 
     tmpcontainer->SetContainerName(ui->tblWdgt_UserContainers->item(g.row(), 2)->text());
-    tmpcontainer->ExportContainer(QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys\\" + ui->tblWdgt_UserContainers->item(g.row(), 2)->text());
-    tmpcontainer->SaveConteinerToArchive(ui->tblWdgt_UserContainers->item(g.row(), 2)->text());
+    tmpcontainer->ExportContainer(QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys");
+    tmpcontainer->SaveConteinerToArchive(programm_options->PathToArchive());
+    tmpcontainer->SetContainerName(ui->tblWdgt_UserContainers->item(g.row(), 2)->text() + "_2");
+    tmpcontainer->ImportContainer(QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys");
 
     delete tmpcontainer;
   };
 };
+
 void MainWindow::ReadArchiveContainers() {
-  ui->tblWdgt_ArchiveContainers->insertRow(0);
-//  ui->tblWdgt_ArchiveContainers->resizeColumnsToContents();
+  // Очищаем таблицу
+  ui->tblWdgt_ArchiveContainers->setRowCount(0);
+  ui->tblWdgt_ArchiveContainers->clearContents();
+
+  QDir archive(programm_options->PathToArchive());
+
+  if (archive.exists()){
+    archive.setFilter(QDir::Files);
+
+    QFileInfoList containerfileslist = archive.entryInfoList();
+
+    foreach (QFileInfo containerfile, containerfileslist) {
+      CContainerData *tmpcontainer = new CContainerData(this);
+      tmpcontainer->SetContainerName(containerfile.fileName());
+      tmpcontainer->LoadContainerFromArchive(programm_options->PathToArchive());
+
+      auto row = ui->tblWdgt_ArchiveContainers->rowCount();
+      ui->tblWdgt_ArchiveContainers->insertRow(row);
+      auto tmpContainerName = new QTableWidgetItem(tmpcontainer->ContainerName());
+
+      // Снимаем флаг "Редактирование"
+      tmpContainerName->setFlags(tmpContainerName->flags() & ~Qt::ItemIsEditable);
+      ui->tblWdgt_ArchiveContainers->setItem(row, 2, tmpContainerName);
+    }
+  } else {
+    QMessageBox::warning(NULL, "Сообщение", "Ошибка доступа к архиву контейнеров:\n" + programm_options->PathToArchive());
+  };
 };
 
 void MainWindow::ImportArchiveContainers() {
-  ui->tblWdgt_ArchiveContainers->removeRow(0);
-//  ui->tblWdgt_ArchiveContainers->resizeColumnsToContents();
+  QDir archive(programm_options->PathToArchive());
+
+  if (archive.exists()) {
+    for (const auto& g : ui->tblWdgt_ArchiveContainers->selectionModel()->selectedRows()) {
+      CContainerData *tmpcontainer = new CContainerData(this);
+
+      tmpcontainer->SetContainerName(ui->tblWdgt_ArchiveContainers->item(g.row(), 2)->text());
+      tmpcontainer->LoadContainerFromArchive(programm_options->PathToArchive());
+      tmpcontainer->ImportContainer(QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys");
+
+      delete tmpcontainer;
+    };
+  } else {
+    QMessageBox::warning(NULL, "Сообщение", "Ошибка доступа к архиву контейнеров:\n" + programm_options->PathToArchive());
+  };
 };
 

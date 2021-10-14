@@ -2,6 +2,9 @@
 #define CMAINDATA_H
 
 #include <QObject>
+#include <QDateTime>
+#include <QBitArray>
+
 
 class CContainerData : public QObject
 {
@@ -13,6 +16,10 @@ class CContainerData : public QObject
 
     QString     ContainerName();
     void        SetContainerName(QString vcontainer_name);
+    QDateTime   StartKeyValidity();
+    void        SetStartKeyValidity(QDateTime vstart_key_validity);
+    QDateTime   EndKeyValidity();
+    void        SetEndKeyValidity(QDateTime vend_key_validity);
     QByteArray  NameKey();
     void        SetNameKey(QByteArray vname_key);
     QByteArray  HeaderKey();
@@ -29,16 +36,18 @@ class CContainerData : public QObject
     void        ExportContainer(QString vcontainer_path);
     void        ImportContainer(QString vcontainer_path);
     void        SaveConteinerToArchive(QString varchive_path);
-    void        LoadContainerToArchive(QString varchive_path);
+    void        LoadContainerFromArchive(QString varchive_path);
 
   private:
-    QString    container_name_;
-    QByteArray name_key_;
-    QByteArray header_key_;
-    QByteArray primary_key_;
-    QByteArray masks_key_;
-    QByteArray primary2_key_;
-    QByteArray masks2_key_;
+    QString     container_name_;
+    QDateTime   start_key_validity_;
+    QDateTime   end_key_validity_;
+    QByteArray    name_key_;
+    QByteArray  header_key_;
+    QByteArray  primary_key_;
+    QByteArray  masks_key_;
+    QByteArray  primary2_key_;
+    QByteArray  masks2_key_;
 
   signals:
 };
