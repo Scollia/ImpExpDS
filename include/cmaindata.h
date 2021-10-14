@@ -14,40 +14,40 @@ class CContainerData : public QObject
     explicit CContainerData(QObject *parent = nullptr);
     ~CContainerData();
 
-    QString     ContainerName();
-    void        SetContainerName(QString vcontainer_name);
-    QDateTime   StartKeyValidity();
-    void        SetStartKeyValidity(QDateTime vstart_key_validity);
-    QDateTime   EndKeyValidity();
-    void        SetEndKeyValidity(QDateTime vend_key_validity);
-    QByteArray  NameKey();
-    void        SetNameKey(QByteArray vname_key);
-    QByteArray  HeaderKey();
-    void        SetHeaderKey(QByteArray vheader_key);
-    QByteArray  PrimaryKey();
-    void        SetPrimaryKey(QByteArray vprimary_key);
-    QByteArray  MasksKey();
-    void        SetMasksKey(QByteArray vmasks_key);
-    QByteArray  Primary2Key();
-    void        SetPrimary2Key(QByteArray vprimary2_key);
-    QByteArray  Masks2Key();
-    void        SetMasks2Key(QByteArray vmasks2_key);
+    QString   ContainerName();
+    void      SetContainerName(QString vcontainer_name);
+    QDateTime StartKeyValidity();
+    void      SetStartKeyValidity(QDateTime vstart_key_validity);
+    QDateTime EndKeyValidity();
+    void      SetEndKeyValidity(QDateTime vend_key_validity);
+    QString   NameKey();
+    void      SetNameKey(QString vname_key);
+    QString   HeaderKey();
+    void      SetHeaderKey(QString vheader_key);
+    QString   PrimaryKey();
+    void      SetPrimaryKey(QString vprimary_key);
+    QString   MasksKey();
+    void      SetMasksKey(QString vmasks_key);
+    QString   Primary2Key();
+    void      SetPrimary2Key(QString vprimary2_key);
+    QString   Masks2Key();
+    void      SetMasks2Key(QString vmasks2_key);
 
-    void        ExportContainer(QString vcontainer_path);
-    void        ImportContainer(QString vcontainer_path);
-    void        SaveConteinerToArchive(QString varchive_path);
-    void        LoadContainerFromArchive(QString varchive_path);
+    void      ExportContainer(QString vcontainer_path);
+    void      ImportContainer(QString vcontainer_path);
+    void      SaveConteinerToArchive(QString varchive_path);
+    void      LoadContainerFromArchive(QString varchive_path);
 
   private:
-    QString     container_name_;
-    QDateTime   start_key_validity_;
-    QDateTime   end_key_validity_;
-    QByteArray    name_key_;
-    QByteArray  header_key_;
-    QByteArray  primary_key_;
-    QByteArray  masks_key_;
-    QByteArray  primary2_key_;
-    QByteArray  masks2_key_;
+    QString   container_name_;
+    QDateTime start_key_validity_;
+    QDateTime end_key_validity_;
+    QString   name_key_;
+    QString   header_key_;
+    QString   primary_key_;
+    QString   masks_key_;
+    QString   primary2_key_;
+    QString   masks2_key_;
 
   signals:
 };

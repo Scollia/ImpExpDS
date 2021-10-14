@@ -3,8 +3,12 @@
 #include <QDir>
 #include <QMessageBox>
 
-#include "..\include\cmaindata.h"
+//#include <sstream>
+//#include <iomanip>
+//#include <stdio.h>
+#include <windows.h>
 
+#include "..\include\cmaindata.h"
 
 #ifdef _WIN64
   #define CRYPTO_PRO_USERS_PATH (L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Crypto Pro\\Settings\\Users")
@@ -59,72 +63,72 @@ void CContainerData::SetEndKeyValidity(QDateTime vend_key_validity)
 }
 
 
-QByteArray CContainerData::NameKey()
+QString CContainerData::NameKey()
 {
   return name_key_;
 }
 
-void CContainerData::SetNameKey(QByteArray vname_key)
+void CContainerData::SetNameKey(QString vname_key)
 {
   if (name_key_ != vname_key) {
     name_key_ = vname_key;
   };
 }
 
-QByteArray CContainerData::HeaderKey()
+QString CContainerData::HeaderKey()
 {
   return header_key_;
 }
 
-void CContainerData::SetHeaderKey(QByteArray vheader_key)
+void CContainerData::SetHeaderKey(QString vheader_key)
 {
   if (header_key_ != vheader_key) {
     header_key_ = vheader_key;
   };
 }
 
-QByteArray CContainerData::PrimaryKey()
+QString CContainerData::PrimaryKey()
 {
   return primary_key_;
 }
 
-void CContainerData::SetPrimaryKey(QByteArray vprimary_key)
+void CContainerData::SetPrimaryKey(QString vprimary_key)
 {
   if (primary_key_ != vprimary_key) {
     primary_key_ = vprimary_key;
   };
 }
 
-QByteArray CContainerData::MasksKey()
+QString CContainerData::MasksKey()
 {
   return masks_key_;
 }
 
-void CContainerData::SetMasksKey(QByteArray vmasks_key)
+void CContainerData::SetMasksKey(QString vmasks_key)
 {
   if (masks_key_ != vmasks_key) {
     masks_key_ = vmasks_key;
   };
 }
 
-QByteArray CContainerData::Primary2Key()
+QString CContainerData::Primary2Key()
 {
   return primary2_key_;
 }
 
-void CContainerData::SetPrimary2Key(QByteArray vprimary2_key)
+void CContainerData::SetPrimary2Key(QString vprimary2_key)
 {
   if (primary2_key_ != vprimary2_key) {
     primary2_key_ = vprimary2_key;
   };
 }
 
-QByteArray CContainerData::Masks2Key()
+QString CContainerData::Masks2Key()
 {
   return masks2_key_;
 }
 
-void CContainerData::SetMasks2Key(QByteArray vmasks2_key)
+void CContainerData::SetMasks2Key(QString vmasks2_key)
 {
   if (masks2_key_ != vmasks2_key) {
     masks2_key_ = vmasks2_key;
@@ -134,18 +138,93 @@ void CContainerData::SetMasks2Key(QByteArray vmasks2_key)
 void CContainerData::ExportContainer(QString vcontainer_path)
 {
   if (container_name_ != "") {
-    QSettings*   tmpSettings   = new QSettings(vcontainer_path, QSettings::NativeFormat);
+    HKEY hkey;
+    DWORD type;
+    DWORD cbData;
 
-    tmpSettings->beginGroup(container_name_);
-    name_key_       = tmpSettings->value("name.key").toByteArray();
-    header_key_     = tmpSettings->value("header.key").toByteArray();
-    primary_key_    = tmpSettings->value("primary.key").toByteArray();
-    masks_key_      = tmpSettings->value("masks.key").toByteArray();
-    primary2_key_   = tmpSettings->value("primary2.key").toByteArray();
-    masks2_key_     = tmpSettings->value("masks2.key").toByteArray();
-    tmpSettings->endGroup();
+    if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, reinterpret_cast<const wchar_t*>((vcontainer_path + "\\" + container_name_).toStdWString().c_str()), 0, KEY_QUERY_VALUE , &hkey) == ERROR_SUCCESS)
+    {
+      if (RegQueryValueEx(hkey, L"name.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
+      {
+        char* data = new char[cbData];
+        DWORD size = cbData;
 
-    delete tmpSettings;
+        if( RegQueryValueExW(hkey,L"name.key", NULL, NULL, reinterpret_cast<LPBYTE>(data), &size)  == ERROR_SUCCESS) {
+          name_key_ = QString(data);
+        } else {
+          name_key_ = "";
+        };
+        delete[] (data);
+      };
+
+      if (RegQueryValueEx(hkey, L"name.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
+      {
+        char* data = new char[cbData];
+        DWORD size = cbData;
+
+        if( RegQueryValueExW(hkey,L"name.key", NULL, NULL, reinterpret_cast<LPBYTE>(data), &size)  == ERROR_SUCCESS) {
+          header_key_ = QString(data);
+        } else {
+          header_key_ = "";
+        };
+        delete[] (data);
+      };
+      if (RegQueryValueEx(hkey, L"name.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
+      {
+        char* data = new char[cbData];
+        DWORD size = cbData;
+
+        if( RegQueryValueExW(hkey,L"name.key", NULL, NULL, reinterpret_cast<LPBYTE>(data), &size)  == ERROR_SUCCESS) {
+          primary_key_ = QString(data);
+        } else {
+          primary_key_ = "";
+        };
+        delete[] (data);
+      };
+
+      if (RegQueryValueEx(hkey, L"name.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
+      {
+        char* data = new char[cbData];
+        DWORD size = cbData;
+
+        if( RegQueryValueExW(hkey,L"name.key", NULL, NULL, reinterpret_cast<LPBYTE>(data), &size)  == ERROR_SUCCESS) {
+          masks_key_ = QString(data);
+        } else {
+          masks_key_ = "";
+        };
+        delete[] (data);
+      };
+
+      if (RegQueryValueEx(hkey, L"name.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
+      {
+        char* data = new char[cbData];
+        DWORD size = cbData;
+
+        if( RegQueryValueExW(hkey,L"name.key", NULL, NULL, reinterpret_cast<LPBYTE>(data), &size)  == ERROR_SUCCESS) {
+          primary2_key_ = QString(data);
+        } else {
+          primary2_key_ = "";
+        };
+        delete[] (data);
+      };
+
+      if (RegQueryValueEx(hkey, L"name.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
+      {
+        char* data = new char[cbData];
+        DWORD size = cbData;
+
+        if( RegQueryValueExW(hkey,L"name.key", NULL, NULL, reinterpret_cast<LPBYTE>(data), &size)  == ERROR_SUCCESS) {
+          masks2_key_ = QString(data);
+        } else {
+          masks2_key_ = "";
+        };
+        delete[] (data);
+      };
+
+      RegCloseKey(hkey);
+    } else {
+      QMessageBox::warning(NULL, "Сообщение", "Ошибка доступа к контейнеру:" + container_name_);
+    }
   } else {
     QMessageBox::warning(NULL, "Сообщение", "Не задано имя контейнера");
   };
@@ -154,19 +233,18 @@ void CContainerData::ExportContainer(QString vcontainer_path)
 void CContainerData::ImportContainer(QString vcontainer_path)
 {
   if (container_name_ != "") {
-    QSettings*   tmpSettings   = new QSettings(vcontainer_path, QSettings::NativeFormat);
+    HKEY hkey;
+    DWORD type;
+    DWORD cbData;
+    RegCreateKeyEx();
+    if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, reinterpret_cast<const wchar_t*>((vcontainer_path + "\\" + container_name_).toStdWString().c_str()), 0, KEY_QUERY_VALUE , &hkey) == ERROR_SUCCESS)
+    {
 
-    tmpSettings->beginGroup(container_name_);
 
-    tmpSettings->setValue("name.key", (QVariant) name_key_);
-    tmpSettings->setValue("header.key", (QVariant) header_key_);
-    tmpSettings->setValue("primary.key", (QVariant) primary_key_);
-    tmpSettings->setValue("masks.key", (QVariant) masks_key_);
-    tmpSettings->setValue("primary2.key", (QVariant) primary2_key_);
-    tmpSettings->setValue("masks2.key", (QVariant) masks2_key_);
-    tmpSettings->endGroup();
-
-    delete tmpSettings;
+      RegCloseKey(hkey);
+    } else {
+      QMessageBox::warning(NULL, "Сообщение", "Ошибка доступа к контейнеру:" + container_name_);
+    }
   } else {
     QMessageBox::warning(NULL, "Сообщение", "Не задано имя контейнера");
   };
