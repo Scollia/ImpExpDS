@@ -6,32 +6,28 @@
 #include <QBitArray>
 
 
+enum TKeyCarrier {
+  KC_NULL;
+  KC_ARCHIVE,
+  KC_KP_REGISTER,
+  KC_KP_REMOVABLE_DRIVES
+};
+
 class CContainerData : public QObject
 {
     Q_OBJECT
 
   public:
     explicit CContainerData(QObject *parent = nullptr);
+    explicit CContainerData(TKeyCarrier vkey_carrier = KC_NULL, QObject *parent = nullptr);
+    explicit CContainerData(QString vcontainer_name, TKeyCarrier vkey_carrier = KC_NULL, QObject *parent = nullptr);
     ~CContainerData();
 
     QString   ContainerName();
     void      SetContainerName(QString vcontainer_name);
     QDateTime StartKeyValidity();
-    void      SetStartKeyValidity(QDateTime vstart_key_validity);
+
     QDateTime EndKeyValidity();
-    void      SetEndKeyValidity(QDateTime vend_key_validity);
-    QString   NameKey();
-    void      SetNameKey(QString vname_key);
-    QString   HeaderKey();
-    void      SetHeaderKey(QString vheader_key);
-    QString   PrimaryKey();
-    void      SetPrimaryKey(QString vprimary_key);
-    QString   MasksKey();
-    void      SetMasksKey(QString vmasks_key);
-    QString   Primary2Key();
-    void      SetPrimary2Key(QString vprimary2_key);
-    QString   Masks2Key();
-    void      SetMasks2Key(QString vmasks2_key);
 
     void      ExportContainer(QString vcontainer_path);
     void      ImportContainer(QString vcontainer_path);
@@ -39,15 +35,16 @@ class CContainerData : public QObject
     void      LoadContainerFromArchive(QString varchive_path);
 
   private:
-    QString   container_name_;
-    QDateTime start_key_validity_;
-    QDateTime end_key_validity_;
-    QString   name_key_;
-    QString   header_key_;
-    QString   primary_key_;
-    QString   masks_key_;
-    QString   primary2_key_;
-    QString   masks2_key_;
+    TKeyCarrier     key_carrier_        = KC_NULL;
+    QString         container_name_     = "";
+    QDateTime       start_key_validity_ = QDateTime::currentDateTime();
+    QDateTime       end_key_validity_   = QDateTime::currentDateTime();
+    unsigned char*  name_key_           = nullptr;
+    unsigned char*  header_key_         = nullptr;
+    unsigned char*  primary_key_        = nullptr;
+    unsigned char*  masks_key_          = nullptr;
+    unsigned char*  primary2_key_       = nullptr;
+    unsigned char*  masks2_key_         = nullptr;
 
   signals:
 };
