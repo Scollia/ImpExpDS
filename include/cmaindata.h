@@ -5,9 +5,8 @@
 #include <QDateTime>
 #include <QBitArray>
 
-
 enum TKeyCarrier {
-  KC_NULL;
+  KC_NULL,
   KC_ARCHIVE,
   KC_KP_REGISTER,
   KC_KP_REMOVABLE_DRIVES
@@ -19,23 +18,30 @@ class CContainerData : public QObject
 
   public:
     explicit CContainerData(QObject *parent = nullptr);
-    explicit CContainerData(TKeyCarrier vkey_carrier = KC_NULL, QObject *parent = nullptr);
-    explicit CContainerData(QString vcontainer_name, TKeyCarrier vkey_carrier = KC_NULL, QObject *parent = nullptr);
+    explicit CContainerData(TKeyCarrier vkey_carrier_type, QString vkey_carrier_root = "", QObject *parent = nullptr);
+    explicit CContainerData(QString vcontainer_name, TKeyCarrier vkey_carrier_type = KC_NULL, QString vkey_carrier_root = "", QObject *parent = nullptr);
     ~CContainerData();
 
-    QString   ContainerName();
-    void      SetContainerName(QString vcontainer_name);
-    QDateTime StartKeyValidity();
+    TKeyCarrier KeyCarrierType();
+    void        SetKeyCarrierType(TKeyCarrier vkey_carrier_type);
+    QString     KeyCarrierRoot();
+    void        SetKeyCarrierRoot(QString vkey_carrier_root);
+    QString     ContainerName();
+    void        SetContainerName(QString vcontainer_name);
+    QDateTime   StartKeyValidity();
+    QDateTime   EndKeyValidity();
 
-    QDateTime EndKeyValidity();
+    bool      ExportContainer();
+    bool      ExportContainer(TKeyCarrier vkey_carrier_type, QString vkey_carrier_root = "");
+    bool      ExportContainer(QString vcontainer_name, TKeyCarrier vkey_carrier_type = KC_NULL, QString vkey_carrier_root = "");
 
-    void      ExportContainer(QString vcontainer_path);
     void      ImportContainer(QString vcontainer_path);
     void      SaveConteinerToArchive(QString varchive_path);
     void      LoadContainerFromArchive(QString varchive_path);
 
   private:
-    TKeyCarrier     key_carrier_        = KC_NULL;
+    TKeyCarrier     key_carrier_type_   = KC_NULL;
+    QString         key_carrier_root_     = "";
     QString         container_name_     = "";
     QDateTime       start_key_validity_ = QDateTime::currentDateTime();
     QDateTime       end_key_validity_   = QDateTime::currentDateTime();
