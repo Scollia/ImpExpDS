@@ -129,24 +129,7 @@ QDateTime CContainerData::EndKeyValidity()
   return end_key_validity_;
 }
 
-bool CContainerData::ExportContainer(TKeyCarrier vkey_carrier_type, QString vkey_carrier_root)
-{
-  SetKeyCarrierType(vkey_carrier_type);
-  SetKeyCarrierRoot(vkey_carrier_root);
-
-  return ExportContainer();
-}
-
-bool CContainerData::ExportContainer(QString vcontainer_name, TKeyCarrier vkey_carrier_type, QString vkey_carrier_root)
-{
-  SetKeyCarrierType(vkey_carrier_type);
-  SetKeyCarrierRoot(vkey_carrier_root);
-  SetContainerName(vcontainer_name);
-
-  return ExportContainer();
-}
-
-bool CContainerData::ExportContainer()
+bool CContainerData::IsCorrectKeyCarrier()
 {
   if (key_carrier_type_ == KC_NULL) {
     QMessageBox::warning(NULL, "Сообщение", "Не задан тип ключевого носителя");
@@ -163,159 +146,225 @@ bool CContainerData::ExportContainer()
     };
   };
 
-  switch (key_carrier_type_) {
-    case KC_NULL: {
-      QMessageBox::warning(NULL, "Сообщение", "Не задан тип ключевого носителя");
-      return false;
-    }; break;
-    case KC_ARCHIVE: {
-
-    }; break;
-    case KC_KP_REGISTER: {
-      HKEY hkey;
-      DWORD type;
-      DWORD cbData;
-
-      if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, reinterpret_cast<const wchar_t*>((key_carrier_root_ + "\\" + container_name_).toStdWString().c_str()), 0, KEY_QUERY_VALUE , &hkey) == ERROR_SUCCESS)
-      {
-        if (RegQueryValueEx(hkey, L"name.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
-        {
-          realloc(name_key_, cbData);
-          if( RegQueryValueExW(hkey, L"name.key", NULL, NULL, name_key_, &cbData)  != ERROR_SUCCESS) {
-            free (name_key_);
-          };
-        };
-
-        if (RegQueryValueEx(hkey, L"header.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
-        {
-          realloc(header_key_, cbData);
-          if( RegQueryValueExW(hkey, L"header.key", NULL, NULL, header_key_, &cbData)  != ERROR_SUCCESS) {
-            free (header_key_);
-          };
-        };
-
-        if (RegQueryValueEx(hkey, L"primary.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
-        {
-          realloc(primary_key_, cbData);
-          if( RegQueryValueExW(hkey, L"primary.key", NULL, NULL, primary_key_, &cbData)  != ERROR_SUCCESS) {
-            free (primary_key_);
-          };
-        };
-
-        if (RegQueryValueEx(hkey, L"masks.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
-        {
-          realloc(masks_key_, cbData);
-          if( RegQueryValueExW(hkey, L"masks.key", NULL, NULL, masks_key_, &cbData)  != ERROR_SUCCESS) {
-            free (masks_key_);
-          };
-        };
-
-        if (RegQueryValueEx(hkey, L"primary2.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
-        {
-          realloc(primary2_key_, cbData);
-          if( RegQueryValueExW(hkey, L"primary2.key", NULL, NULL, primary2_key_, &cbData)  != ERROR_SUCCESS) {
-            free (primary2_key_);
-          };
-        };
-
-        if (RegQueryValueEx(hkey, L"masks2.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
-        {
-          realloc(masks2_key_, cbData);
-          if( RegQueryValueExW(hkey, L"masks2.key", NULL, NULL, masks2_key_, &cbData)  != ERROR_SUCCESS) {
-            free (masks2_key_);
-          };
-        };
-
-        RegCloseKey(hkey);
-      } else {
-        QMessageBox::warning(NULL, "Сообщение", "Ошибка доступа к контейнеру: " + container_name_);
-      };
-    }; break;
-    case KC_KP_REMOVABLE_DRIVES: {
-      QMessageBox::warning(NULL, "Сообщение", "Данный тип ключевого носителя неподдерживается");
-    }; break;
-    default: {
-      QMessageBox::warning(NULL, "Сообщение", "Неизвестный тип ключевого носителя");
-
-    };
-  }
-
-  return true;
+  return true
 }
 
-//====
-
-void CContainerData::ImportContainer(QString vcontainer_path)
+bool CContainerData::ImportContainer(TKeyCarrier vkey_carrier_type, QString vkey_carrier_root)
 {
-  if (container_name_ != "") {
-    HKEY hkey;
-//    DWORD type;
-//    DWORD cbData;
-    DWORD lpdwDisposition;
-//    RegCreateKeyEx(HKEY_LOCAL_MACHINE, reinterpret_cast<const wchar_t*>((vcontainer_path + "\\" + container_name_).toStdWString().c_str()), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_QUERY_VALUE, NULL, &hkey, &lpdwDisposition);
-    RegCreateKeyEx(HKEY_LOCAL_MACHINE, reinterpret_cast<const wchar_t*>((vcontainer_path + "\\" + container_name_).toStdWString().c_str()), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkey, &lpdwDisposition);
-    if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, reinterpret_cast<const wchar_t*>((vcontainer_path + "\\" + container_name_).toStdWString().c_str()), 0, KEY_QUERY_VALUE, &hkey) == ERROR_SUCCESS)
-    {
-//      if (RegSetValueEx(runKey, packageName, 0, REG_SZ, (BYTE*)machineInstallFolder, (wcsnlen(machineInstallFolder, sizeof(machineInstallFolder)) + 1) * sizeof(wchar_t)) != ERROR_SUCCESS) {
-//              return GetLastError();
-//      }
-QMessageBox::warning(NULL, "Сообщение", "Все в норме");
-      RegCloseKey(hkey);
-    } else {
-      QMessageBox::warning(NULL, "Сообщение", "Ошибка доступа к контейнеру:" + container_name_);
-    }
+  if (vkey_carrier_type != KC_NULL) {
+    SetKeyCarrierType(vkey_carrier_type);
+  };
+  if (vkey_carrier_root != "") {
+    SetKeyCarrierRoot(vkey_carrier_root);
+  };
+
+  return ImportContainer();
+}
+
+bool CContainerData::ImportContainer(QString vcontainer_name, TKeyCarrier vkey_carrier_type, QString vkey_carrier_root)
+{
+  if (vkey_carrier_type != KC_NULL) {
+    SetKeyCarrierType(vkey_carrier_type);
+  };
+  if (vkey_carrier_root != "") {
+    SetKeyCarrierRoot(vkey_carrier_root);
+  };
+  if (vcontainer_name != "") {
+    SetContainerName(vcontainer_name);
+  };
+
+  return ImportContainer();
+}
+
+bool CContainerData::ImportContainer()
+{
+  if (IsCorrectKeyCarrier()) {
+
+    switch (key_carrier_type_) {
+      case KC_NULL: {
+        QMessageBox::warning(NULL, "Сообщение", "Не задан тип ключевого носителя");
+        return false;
+      }; break;
+      case KC_ARCHIVE: {
+        QDir archive;
+
+        if (archive.exists(key_carrier_root_)){
+          QFile file(key_carrier_root_ + "\\"+ container_name_);
+
+          if (file.open(QIODevice::ReadOnly)) {
+            QDataStream in(&file);
+            in.setVersion(QDataStream::Qt_6_0);
+
+//          in >> start_key_validity_ >> end_key_validity_ >> name_key_ >> header_key_ >> primary_key_ >> masks_key_ >> primary2_key_ >> masks2_key_;
+          } else {
+            QMessageBox::warning(NULL, "Сообщение", "Отсутствует контейнер:\n" + container_name_);
+          };
+        } else {
+          QMessageBox::warning(NULL, "Сообщение", "Отсутствует архив контейнеров:\n" + key_carrier_root_);
+        };
+      }; break;
+      case KC_KP_REGISTER: {
+        HKEY hkey;
+        DWORD type;
+        DWORD cbData;
+
+        if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, reinterpret_cast<const wchar_t*>((key_carrier_root_ + "\\" + container_name_).toStdWString().c_str()), 0, KEY_QUERY_VALUE , &hkey) == ERROR_SUCCESS)
+        {
+          if (RegQueryValueEx(hkey, L"name.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
+          {
+            realloc(name_key_, cbData);
+            if( RegQueryValueExW(hkey, L"name.key", NULL, NULL, name_key_, &cbData)  != ERROR_SUCCESS) {
+              free (name_key_);
+            };
+          };
+
+          if (RegQueryValueEx(hkey, L"header.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
+          {
+            realloc(header_key_, cbData);
+            if( RegQueryValueExW(hkey, L"header.key", NULL, NULL, header_key_, &cbData)  != ERROR_SUCCESS) {
+              free (header_key_);
+            };
+          };
+
+          if (RegQueryValueEx(hkey, L"primary.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
+          {
+            realloc(primary_key_, cbData);
+            if( RegQueryValueExW(hkey, L"primary.key", NULL, NULL, primary_key_, &cbData)  != ERROR_SUCCESS) {
+              free (primary_key_);
+            };
+          };
+
+          if (RegQueryValueEx(hkey, L"masks.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
+          {
+            realloc(masks_key_, cbData);
+            if( RegQueryValueExW(hkey, L"masks.key", NULL, NULL, masks_key_, &cbData)  != ERROR_SUCCESS) {
+              free (masks_key_);
+            };
+          };
+
+          if (RegQueryValueEx(hkey, L"primary2.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
+          {
+            realloc(primary2_key_, cbData);
+            if( RegQueryValueExW(hkey, L"primary2.key", NULL, NULL, primary2_key_, &cbData)  != ERROR_SUCCESS) {
+              free (primary2_key_);
+            };
+          };
+
+          if (RegQueryValueEx(hkey, L"masks2.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
+          {
+            realloc(masks2_key_, cbData);
+            if( RegQueryValueExW(hkey, L"masks2.key", NULL, NULL, masks2_key_, &cbData)  != ERROR_SUCCESS) {
+              free (masks2_key_);
+            };
+          };
+
+          RegCloseKey(hkey);
+        } else {
+          QMessageBox::warning(NULL, "Сообщение", "Ошибка доступа к контейнеру: " + container_name_);
+          return false;
+        };
+      }; break;
+      case KC_KP_REMOVABLE_DRIVES: {
+        QMessageBox::warning(NULL, "Сообщение", "Данный тип ключевого носителя неподдерживается");
+        return false;
+      }; break;
+      default: {
+        QMessageBox::warning(NULL, "Сообщение", "Неизвестный тип ключевого носителя");
+        return false;
+      };
+    };
+
+    return true;
   } else {
-    QMessageBox::warning(NULL, "Сообщение", "Не задано имя контейнера");
+    return false;
   };
 }
 
-void CContainerData::SaveConteinerToArchive(QString varchive_path)
+bool CContainerData::ExportContainer(TKeyCarrier vkey_carrier_type, QString vkey_carrier_root)
 {
-  if (container_name_ != "") {
-    QDir archive;
-
-    if (!archive.exists(varchive_path)) {
-      archive.mkpath(varchive_path);
-    };
-
-    if (archive.exists(varchive_path)) {
-      QFile file(varchive_path + "\\" + container_name_);
-
-      if (file.open(QIODevice::WriteOnly)) {
-        QDataStream out(&file);
-        out.setVersion(QDataStream::Qt_6_0);
-
-        out << start_key_validity_ << end_key_validity_ << name_key_ << header_key_ << primary_key_ << masks_key_ << primary2_key_ << masks2_key_;
-      };
-    } else {
-      QMessageBox::warning(NULL, "Сообщение", "Ошибка доступа к архиву контейнеров:\n" + varchive_path);
-    };
-  } else {
-    QMessageBox::warning(NULL, "Сообщение", "Не задано имя контейнера");
+  if (vkey_carrier_type != KC_NULL) {
+    SetKeyCarrierType(vkey_carrier_type);
   };
+  if (vkey_carrier_root != "") {
+    SetKeyCarrierRoot(vkey_carrier_root);
+  };
+
+  return ExportContainer();
 }
 
-void CContainerData::LoadContainerFromArchive(QString varchive_path)
+bool CContainerData::ExportContainer(QString vcontainer_name, TKeyCarrier vkey_carrier_type, QString vkey_carrier_root)
 {
-  if (container_name_ != "") {
-    QDir archive;
+  if (vkey_carrier_type != KC_NULL) {
+    SetKeyCarrierType(vkey_carrier_type);
+  };
+  if (vkey_carrier_root != "") {
+    SetKeyCarrierRoot(vkey_carrier_root);
+  };
+  if (vcontainer_name != "") {
+    SetContainerName(vcontainer_name);
+  };
 
-    if (archive.exists(varchive_path)){
-      QFile file(varchive_path + "\\"+ container_name_);
+  return ExportContainer();
+}
 
-      if (file.open(QIODevice::ReadOnly)) {
-        QDataStream in(&file);
-        in.setVersion(QDataStream::Qt_6_0);
+bool CContainerData::ExportContainer()
+{
+  if (IsCorrectKeyCarrier()) {
 
-        in >> start_key_validity_ >> end_key_validity_ >> name_key_ >> header_key_ >> primary_key_ >> masks_key_ >> primary2_key_ >> masks2_key_;
-      } else {
-        QMessageBox::warning(NULL, "Сообщение", "Отсутствует контейнер:\n" + container_name_);
+    switch (key_carrier_type_) {
+      case KC_NULL: {
+        QMessageBox::warning(NULL, "Сообщение", "Не задан тип ключевого носителя");
+        return false;
+      }; break;
+      case KC_ARCHIVE: {
+        QDir archive;
+
+        if (!archive.exists(key_carrier_root_)) {
+          archive.mkpath(key_carrier_root_);
+        };
+
+        if (archive.exists(key_carrier_root_)) {
+          QFile file(key_carrier_root_ + "\\" + container_name_);
+
+          if (file.open(QIODevice::WriteOnly)) {
+            QDataStream out(&file);
+            out.setVersion(QDataStream::Qt_6_0);
+
+            out << start_key_validity_ << end_key_validity_ << name_key_ << header_key_ << primary_key_ << masks_key_ << primary2_key_ << masks2_key_;
+          };
+        } else {
+          QMessageBox::warning(NULL, "Сообщение", "Ошибка доступа к архиву контейнеров:\n" + key_carrier_root_);
+          return false;
+        };
+      }; break;
+      case KC_KP_REGISTER: {
+        HKEY hkey;
+        DWORD lpdwDisposition;
+
+        RegCreateKeyEx(HKEY_LOCAL_MACHINE, reinterpret_cast<const wchar_t*>((key_carrier_root_ + "\\" + container_name_).toStdWString().c_str()), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkey, &lpdwDisposition);
+
+        if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, reinterpret_cast<const wchar_t*>((key_carrier_root_ + "\\" + container_name_).toStdWString().c_str()), 0, KEY_QUERY_VALUE , &hkey) == ERROR_SUCCESS) {
+          QMessageBox::warning(NULL, "Сообщение", "Все в норме");
+
+          RegCloseKey(hkey);
+        } else {
+          QMessageBox::warning(NULL, "Сообщение", "Ошибка доступа к контейнеру: " + container_name_);
+          return false;
+        };
+      }; break;
+      case KC_KP_REMOVABLE_DRIVES: {
+        QMessageBox::warning(NULL, "Сообщение", "Данный тип ключевого носителя неподдерживается");
+        return false;
+      }; break;
+      default: {
+        QMessageBox::warning(NULL, "Сообщение", "Неизвестный тип ключевого носителя");
+        return false;
       };
-    } else {
-      QMessageBox::warning(NULL, "Сообщение", "Отсутствует архив контейнеров:\n" + varchive_path);
     };
+
+    return true;
   } else {
-    QMessageBox::warning(NULL, "Сообщение", "Не задано имя контейнера");
+    return false;
   };
 }
 

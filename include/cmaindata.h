@@ -31,15 +31,18 @@ class CContainerData : public QObject
     QDateTime   StartKeyValidity();
     QDateTime   EndKeyValidity();
 
+    bool      ImportContainer();
+    bool      ImportContainer(TKeyCarrier vkey_carrier_type, QString vkey_carrier_root = "");
+    bool      ImportContainer(QString vcontainer_name, TKeyCarrier vkey_carrier_type = KC_NULL, QString vkey_carrier_root = "");
+
     bool      ExportContainer();
     bool      ExportContainer(TKeyCarrier vkey_carrier_type, QString vkey_carrier_root = "");
     bool      ExportContainer(QString vcontainer_name, TKeyCarrier vkey_carrier_type = KC_NULL, QString vkey_carrier_root = "");
 
-    void      ImportContainer(QString vcontainer_path);
-    void      SaveConteinerToArchive(QString varchive_path);
-    void      LoadContainerFromArchive(QString varchive_path);
-
   private:
+    bool IsCorrectKeyCarrier();
+
+
     TKeyCarrier     key_carrier_type_   = KC_NULL;
     QString         key_carrier_root_     = "";
     QString         container_name_     = "";
