@@ -9,9 +9,11 @@
 #include "ui_mainwindow.h"
 
 #ifdef _WIN64
-  #define CRYPTO_PRO_USERS_PATH (L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Crypto Pro\\Settings\\Users")
+//  #define CRYPTO_PRO_USERS_PATH (L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Crypto Pro\\Settings\\Users")
+  #define CRYPTO_PRO_USERS_PATH (L"SOFTWARE\\Wow6432Node\\Crypto Pro\\Settings\\Users")
 #else
-  #define CRYPTO_PRO_USERS_PATH ("HKEY_LOCAL_MACHINE\\SOFTWARE\\Crypto Pro\\Settings\\Users")
+//  #define CRYPTO_PRO_USERS_PATH ("HKEY_LOCAL_MACHINE\\SOFTWARE\\Crypto Pro\\Settings\\Users")
+  #define CRYPTO_PRO_USERS_PATH ("SOFTWARE\\Crypto Pro\\Settings\\Users")
 #endif
 
 MainWindow::MainWindow(QWidget *parent)
@@ -74,7 +76,7 @@ void MainWindow::ReadUserContainers() {
   ui->tblWdgt_UserContainers->setRowCount(0);
   ui->tblWdgt_UserContainers->clearContents();
 
-  QSettings* tmpSettings   = new QSettings(QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys", QSettings::NativeFormat);
+  QSettings* tmpSettings   = new QSettings("HKEY_LOCAL_MACHINE\\" + QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys", QSettings::NativeFormat);
   for (const auto& g : tmpSettings->childGroups()) {
     auto row = ui->tblWdgt_UserContainers->rowCount();
     ui->tblWdgt_UserContainers->insertRow(row);
@@ -95,7 +97,7 @@ void MainWindow::ExportUserContainers() {
 
     tmpcontainer->SetContainerName(ui->tblWdgt_UserContainers->item(g.row(), 2)->text());
     tmpcontainer->ExportContainer(QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys");
-    tmpcontainer->SaveConteinerToArchive(programm_options->PathToArchive());
+//    tmpcontainer->SaveConteinerToArchive(programm_options->PathToArchive());
     tmpcontainer->SetContainerName(ui->tblWdgt_UserContainers->item(g.row(), 2)->text() + "_2");
     tmpcontainer->ImportContainer(QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys");
 
@@ -118,7 +120,7 @@ void MainWindow::ReadArchiveContainers() {
     foreach (QFileInfo containerfile, containerfileslist) {
       CContainerData *tmpcontainer = new CContainerData(this);
       tmpcontainer->SetContainerName(containerfile.fileName());
-      tmpcontainer->LoadContainerFromArchive(programm_options->PathToArchive());
+//      tmpcontainer->LoadContainerFromArchive(programm_options->PathToArchive());
 
       auto row = ui->tblWdgt_ArchiveContainers->rowCount();
       ui->tblWdgt_ArchiveContainers->insertRow(row);
@@ -141,7 +143,7 @@ void MainWindow::ImportArchiveContainers() {
       CContainerData *tmpcontainer = new CContainerData(this);
 
       tmpcontainer->SetContainerName(ui->tblWdgt_ArchiveContainers->item(g.row(), 2)->text());
-      tmpcontainer->LoadContainerFromArchive(programm_options->PathToArchive());
+//      tmpcontainer->LoadContainerFromArchive(programm_options->PathToArchive());
       tmpcontainer->ImportContainer(QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys");
 
       delete tmpcontainer;

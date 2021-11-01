@@ -5,6 +5,12 @@
 #include <QDateTime>
 #include <QBitArray>
 
+enum TKeyCarrier {
+  KC_NULL,
+  KC_ARCHIVE,
+  KC_KP_REGISTER,
+  KC_KP_REMOVABLE_DRIVES
+};
 
 class CContainerData : public QObject
 {
@@ -12,42 +18,42 @@ class CContainerData : public QObject
 
   public:
     explicit CContainerData(QObject *parent = nullptr);
+    explicit CContainerData(TKeyCarrier vkey_carrier_type, QString vkey_carrier_root = "", QObject *parent = nullptr);
+    explicit CContainerData(QString vcontainer_name, TKeyCarrier vkey_carrier_type = KC_NULL, QString vkey_carrier_root = "", QObject *parent = nullptr);
     ~CContainerData();
 
+    TKeyCarrier KeyCarrierType();
+    void        SetKeyCarrierType(TKeyCarrier vkey_carrier_type);
+    QString     KeyCarrierRoot();
+    void        SetKeyCarrierRoot(QString vkey_carrier_root);
     QString     ContainerName();
     void        SetContainerName(QString vcontainer_name);
     QDateTime   StartKeyValidity();
-    void        SetStartKeyValidity(QDateTime vstart_key_validity);
     QDateTime   EndKeyValidity();
-    void        SetEndKeyValidity(QDateTime vend_key_validity);
-    QByteArray  NameKey();
-    void        SetNameKey(QByteArray vname_key);
-    QByteArray  HeaderKey();
-    void        SetHeaderKey(QByteArray vheader_key);
-    QByteArray  PrimaryKey();
-    void        SetPrimaryKey(QByteArray vprimary_key);
-    QByteArray  MasksKey();
-    void        SetMasksKey(QByteArray vmasks_key);
-    QByteArray  Primary2Key();
-    void        SetPrimary2Key(QByteArray vprimary2_key);
-    QByteArray  Masks2Key();
-    void        SetMasks2Key(QByteArray vmasks2_key);
 
-    void        ExportContainer(QString vcontainer_path);
-    void        ImportContainer(QString vcontainer_path);
-    void        SaveConteinerToArchive(QString varchive_path);
-    void        LoadContainerFromArchive(QString varchive_path);
+    bool      ImportContainer();
+    bool      ImportContainer(TKeyCarrier vkey_carrier_type, QString vkey_carrier_root = "");
+    bool      ImportContainer(QString vcontainer_name, TKeyCarrier vkey_carrier_type = KC_NULL, QString vkey_carrier_root = "");
+
+    bool      ExportContainer();
+    bool      ExportContainer(TKeyCarrier vkey_carrier_type, QString vkey_carrier_root = "");
+    bool      ExportContainer(QString vcontainer_name, TKeyCarrier vkey_carrier_type = KC_NULL, QString vkey_carrier_root = "");
 
   private:
-    QString     container_name_;
-    QDateTime   start_key_validity_;
-    QDateTime   end_key_validity_;
-    QByteArray    name_key_;
-    QByteArray  header_key_;
-    QByteArray  primary_key_;
-    QByteArray  masks_key_;
-    QByteArray  primary2_key_;
-    QByteArray  masks2_key_;
+    bool IsCorrectKeyCarrier();
+
+
+    TKeyCarrier     key_carrier_type_   = KC_NULL;
+    QString         key_carrier_root_     = "";
+    QString         container_name_     = "";
+    QDateTime       start_key_validity_ = QDateTime::currentDateTime();
+    QDateTime       end_key_validity_   = QDateTime::currentDateTime();
+    unsigned char*  name_key_           = nullptr;
+    unsigned char*  header_key_         = nullptr;
+    unsigned char*  primary_key_        = nullptr;
+    unsigned char*  masks_key_          = nullptr;
+    unsigned char*  primary2_key_       = nullptr;
+    unsigned char*  masks2_key_         = nullptr;
 
   signals:
 };
