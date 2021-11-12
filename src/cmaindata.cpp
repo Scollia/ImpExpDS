@@ -3,8 +3,6 @@
 #include <QSettings>
 #include <QMessageBox>
 
-#include <windows.h>
-
 #include "..\include\cmaindata.h"
 
 #define ALL_REMOVABLE_DRIVES
@@ -146,7 +144,56 @@ bool CContainerData::IsCorrectKeyCarrier()
     };
   };
 
-  return true
+  return true;
+}
+
+
+QByteArray  CContainerData::NameKey()
+{
+  QByteArray ret;
+
+  ret.fromRawData((char*) name_key_, name_key_size_);
+  return ret;
+}
+
+QByteArray  CContainerData::HeaderKey()
+{
+  QByteArray ret;
+
+  ret.fromRawData((char*) header_key_, header_key_size_);
+  return ret;
+}
+
+QByteArray  CContainerData::PrimaryKey()
+{
+  QByteArray ret;
+
+  ret.fromRawData((char*) primary_key_, primary_key_size_);
+  return ret;
+}
+
+QByteArray  CContainerData::MasksKey()
+{
+  QByteArray ret;
+
+  ret.fromRawData((char*) masks_key_, masks_key_size_);
+  return ret;
+}
+
+QByteArray  CContainerData::Primary2Key()
+{
+  QByteArray ret;
+
+  ret.fromRawData((char*) primary2_key_, primary2_key_size_);
+  return ret;
+}
+
+QByteArray  CContainerData::Masks2Key()
+{
+  QByteArray ret;
+
+  ret.fromRawData((char*) masks2_key_, masks2_key_size_);
+  return ret;
 }
 
 bool CContainerData::ImportContainer(TKeyCarrier vkey_carrier_type, QString vkey_carrier_root)
@@ -206,54 +253,53 @@ bool CContainerData::ImportContainer()
       case KC_KP_REGISTER: {
         HKEY hkey;
         DWORD type;
-        DWORD cbData;
 
         if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, reinterpret_cast<const wchar_t*>((key_carrier_root_ + "\\" + container_name_).toStdWString().c_str()), 0, KEY_QUERY_VALUE , &hkey) == ERROR_SUCCESS)
         {
-          if (RegQueryValueEx(hkey, L"name.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
+          if (RegQueryValueEx(hkey, L"name.key", NULL, &type, NULL, &name_key_size_) == ERROR_SUCCESS)
           {
-            realloc(name_key_, cbData);
-            if( RegQueryValueExW(hkey, L"name.key", NULL, NULL, name_key_, &cbData)  != ERROR_SUCCESS) {
+            name_key_ = (unsigned char*) realloc(name_key_, name_key_size_);
+            if(RegQueryValueExW(hkey, L"name.key", NULL, NULL, name_key_, &name_key_size_) != ERROR_SUCCESS) {
               free (name_key_);
             };
           };
 
-          if (RegQueryValueEx(hkey, L"header.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
+          if (RegQueryValueEx(hkey, L"header.key", NULL, &type, NULL, &header_key_size_) == ERROR_SUCCESS)
           {
-            realloc(header_key_, cbData);
-            if( RegQueryValueExW(hkey, L"header.key", NULL, NULL, header_key_, &cbData)  != ERROR_SUCCESS) {
+            header_key_ =(unsigned char*)  realloc(header_key_, header_key_size_);
+            if(RegQueryValueExW(hkey, L"header.key", NULL, NULL, header_key_, &header_key_size_) != ERROR_SUCCESS) {
               free (header_key_);
             };
           };
 
-          if (RegQueryValueEx(hkey, L"primary.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
+          if (RegQueryValueEx(hkey, L"primary.key", NULL, &type, NULL, &primary_key_size_) == ERROR_SUCCESS)
           {
-            realloc(primary_key_, cbData);
-            if( RegQueryValueExW(hkey, L"primary.key", NULL, NULL, primary_key_, &cbData)  != ERROR_SUCCESS) {
+            primary_key_ = (unsigned char*) realloc(primary_key_, primary_key_size_);
+            if( RegQueryValueExW(hkey, L"primary.key", NULL, NULL, primary_key_, &primary_key_size_)  != ERROR_SUCCESS) {
               free (primary_key_);
             };
           };
 
-          if (RegQueryValueEx(hkey, L"masks.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
+          if (RegQueryValueEx(hkey, L"masks.key", NULL, &type, NULL, &masks_key_size_) == ERROR_SUCCESS)
           {
-            realloc(masks_key_, cbData);
-            if( RegQueryValueExW(hkey, L"masks.key", NULL, NULL, masks_key_, &cbData)  != ERROR_SUCCESS) {
+            masks_key_ = (unsigned char*) realloc(masks_key_, masks_key_size_);
+            if( RegQueryValueExW(hkey, L"masks.key", NULL, NULL, masks_key_, &masks_key_size_)  != ERROR_SUCCESS) {
               free (masks_key_);
             };
           };
 
-          if (RegQueryValueEx(hkey, L"primary2.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
+          if (RegQueryValueEx(hkey, L"primary2.key", NULL, &type, NULL, &primary2_key_size_) == ERROR_SUCCESS)
           {
-            realloc(primary2_key_, cbData);
-            if( RegQueryValueExW(hkey, L"primary2.key", NULL, NULL, primary2_key_, &cbData)  != ERROR_SUCCESS) {
+            primary2_key_ = (unsigned char*) realloc(primary2_key_, primary2_key_size_);
+            if( RegQueryValueExW(hkey, L"primary2.key", NULL, NULL, primary2_key_, &primary2_key_size_)  != ERROR_SUCCESS) {
               free (primary2_key_);
             };
           };
 
-          if (RegQueryValueEx(hkey, L"masks2.key", NULL, &type, NULL, &cbData) == ERROR_SUCCESS)
+          if (RegQueryValueEx(hkey, L"masks2.key", NULL, &type, NULL, &masks2_key_size_) == ERROR_SUCCESS)
           {
-            realloc(masks2_key_, cbData);
-            if( RegQueryValueExW(hkey, L"masks2.key", NULL, NULL, masks2_key_, &cbData)  != ERROR_SUCCESS) {
+            masks2_key_ = (unsigned char*) realloc(masks2_key_, masks2_key_size_);
+            if( RegQueryValueExW(hkey, L"masks2.key", NULL, NULL, masks2_key_, &masks2_key_size_)  != ERROR_SUCCESS) {
               free (masks2_key_);
             };
           };
@@ -330,7 +376,7 @@ bool CContainerData::ExportContainer()
             QDataStream out(&file);
             out.setVersion(QDataStream::Qt_6_0);
 
-            out << start_key_validity_ << end_key_validity_ << name_key_ << header_key_ << primary_key_ << masks_key_ << primary2_key_ << masks2_key_;
+            out << start_key_validity_ << end_key_validity_ << HeaderKey() << HeaderKey() << PrimaryKey() << MasksKey() << Primary2Key() << Masks2Key();
           };
         } else {
           QMessageBox::warning(NULL, "Сообщение", "Ошибка доступа к архиву контейнеров:\n" + key_carrier_root_);

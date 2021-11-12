@@ -96,10 +96,10 @@ void MainWindow::ExportUserContainers() {
     CContainerData *tmpcontainer = new CContainerData(this);
 
     tmpcontainer->SetContainerName(ui->tblWdgt_UserContainers->item(g.row(), 2)->text());
-    tmpcontainer->ExportContainer(QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys");
+    tmpcontainer->ImportContainer(KC_KP_REGISTER, QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys");
 //    tmpcontainer->SaveConteinerToArchive(programm_options->PathToArchive());
     tmpcontainer->SetContainerName(ui->tblWdgt_UserContainers->item(g.row(), 2)->text() + "_2");
-    tmpcontainer->ImportContainer(QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys");
+    tmpcontainer->ExportContainer(KC_ARCHIVE, programm_options->PathToArchive());
 
     delete tmpcontainer;
   };
@@ -142,9 +142,10 @@ void MainWindow::ImportArchiveContainers() {
     for (const auto& g : ui->tblWdgt_ArchiveContainers->selectionModel()->selectedRows()) {
       CContainerData *tmpcontainer = new CContainerData(this);
 
-      tmpcontainer->SetContainerName(ui->tblWdgt_ArchiveContainers->item(g.row(), 2)->text());
-//      tmpcontainer->LoadContainerFromArchive(programm_options->PathToArchive());
-      tmpcontainer->ImportContainer(QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys");
+      tmpcontainer->SetContainerName(ui->tblWdgt_UserContainers->item(g.row(), 2)->text());
+      tmpcontainer->ImportContainer(KC_ARCHIVE, programm_options->PathToArchive());
+//      tmpcontainer->SetContainerName(ui->tblWdgt_UserContainers->item(g.row(), 2)->text() + "_2");
+      tmpcontainer->ExportContainer(KC_KP_REGISTER, QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys");
 
       delete tmpcontainer;
     };

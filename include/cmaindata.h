@@ -5,6 +5,8 @@
 #include <QDateTime>
 #include <QBitArray>
 
+#include <windows.h>
+
 enum TKeyCarrier {
   KC_NULL,
   KC_ARCHIVE,
@@ -40,8 +42,14 @@ class CContainerData : public QObject
     bool      ExportContainer(QString vcontainer_name, TKeyCarrier vkey_carrier_type = KC_NULL, QString vkey_carrier_root = "");
 
   private:
-    bool IsCorrectKeyCarrier();
+    bool        IsCorrectKeyCarrier();
 
+    QByteArray  NameKey();
+    QByteArray  HeaderKey();
+    QByteArray  PrimaryKey();
+    QByteArray  MasksKey();
+    QByteArray  Primary2Key();
+    QByteArray  Masks2Key();
 
     TKeyCarrier     key_carrier_type_   = KC_NULL;
     QString         key_carrier_root_     = "";
@@ -49,11 +57,17 @@ class CContainerData : public QObject
     QDateTime       start_key_validity_ = QDateTime::currentDateTime();
     QDateTime       end_key_validity_   = QDateTime::currentDateTime();
     unsigned char*  name_key_           = nullptr;
+    DWORD           name_key_size_      = 0;
     unsigned char*  header_key_         = nullptr;
+    DWORD           header_key_size_    = 0;
     unsigned char*  primary_key_        = nullptr;
+    DWORD           primary_key_size_   = 0;
     unsigned char*  masks_key_          = nullptr;
+    DWORD           masks_key_size_     = 0;
     unsigned char*  primary2_key_       = nullptr;
+    DWORD           primary2_key_size_  = 0;
     unsigned char*  masks2_key_         = nullptr;
+    DWORD           masks2_key_size_    = 0;
 
   signals:
 };
