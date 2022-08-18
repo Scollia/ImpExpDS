@@ -142,7 +142,7 @@ void MainWindow::ImportArchiveContainers() {
     for (const auto& g : ui->tblWdgt_ArchiveContainers->selectionModel()->selectedRows()) {
       CContainerData *tmpcontainer = new CContainerData(this);
 
-      tmpcontainer->SetContainerName(ui->tblWdgt_UserContainers->item(g.row(), 2)->text());
+      tmpcontainer->SetContainerName(ui->tblWdgt_ArchiveContainers->item(g.row(), 2)->text());
       tmpcontainer->ImportContainer(KC_ARCHIVE, programm_options->PathToArchive());
 //      tmpcontainer->SetContainerName(ui->tblWdgt_UserContainers->item(g.row(), 2)->text() + "_2");
       tmpcontainer->ExportContainer(KC_KP_REGISTER, QString::fromWCharArray(CRYPTO_PRO_USERS_PATH) + "\\" + programm_options->UserSID() + "\\Keys");
